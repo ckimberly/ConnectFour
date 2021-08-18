@@ -10,7 +10,7 @@ const HEIGHT = 6;
 
 let currPlayer = 1; // active player: 1 or 2
 let board = []; // array of rows, each row is array of cells  (board[y][x])
-
+let gameRunning = true;
 /** makeBoard: create in-JS board structure:
  *    board = array of rows, each row is array of cells  (board[y][x])
  */
@@ -111,12 +111,16 @@ function placeInTable(y, x) {
 
 function endGame(msg) {
   // TODO: pop up alert message
-  alert(msg);
+  gameRunning = false;
+  setTimeout(() => {alert(msg);},800);
 }
 
 /** handleClick: handle click of column top to play piece */
 
 function handleClick(evt) {
+  if(gameRunning === false)
+  return;
+  //ignore if game ended
   // get x from ID of clicked cell
   const x = +evt.target.id;
 
@@ -133,20 +137,37 @@ function handleClick(evt) {
 
   // check for win
   if (checkForWin()) {
-    return setTimeout(endGame(`Player ${currPlayer} won!`),2000);
+    return endGame(`Player ${currPlayer} won!`);
   }
 
   // check for tie
   // TODO: check if all cells in board are filled; if so call, call endGame
-  if(board.every(row => row.every(cell => cell))) {
-    return setTimeout(endGame('Tie Game!'),2000)
+  // checkForTie();
+  if(checkForTie()) {
+    return endGame('Tie Game!');
   }
+  // if(board.every(row => row.every(cell => cell))) {
+  //   return endGame('Tie Game!');
+  // }
 
   // switch players
   // TODO: switch currPlayer 1 <-> 2
-  currPlayer = currPlayer === 1 ? 2 : 1;
+  // currPlayer = currPlayer === 1 ? 2 : 1;
+  switchPlayer();
 }
 
+// function checkForTie() {
+//   if(board.every(row => row.every(cell => cell))) {
+//     return endGame('Tie Game!');
+//   }
+// }
+function checkForTie(){
+  return board.every(row => row.every(cell => cell));
+}
+
+function switchPlayer() {
+  currPlayer = currPlayer === 1 ? 2 : 1;
+}
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
 
 function checkForWin() {
